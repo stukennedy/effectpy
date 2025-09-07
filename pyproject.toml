@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "effectpy"
+version = "0.1.0"
+description = "Effect/ZIO-inspired structured async for Python"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+anyio = ["anyio>=4.0"]
+exporters = ["aiohttp>=3.8"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["effectpy"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "effectpy",
+  "examples",
+  "README.md",
+  "pyproject.toml",
+]
+

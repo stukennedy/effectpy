@@ -20,18 +20,23 @@ class Pipeline(Generic[A,B]):
     def to_channel(self, out: Channel[B]) -> Effect[object, Exception, None]:
         async def run(_: Context):
             prev = self.source
+            # Build each stage, capturing loop variables properly
             for st in self.stages:
                 nxt: Channel[B] = Channel[B](maxsize=st.out_capacity)  # type: ignore
-                async def worker():
+
+                async def worker(prev_=prev, st_=st, nxt_=nxt):  # capture by default args
                     while True:
-                        item = await prev.receive()
-                        res = await st.func(item)  # type: ignore
-                        await nxt.send(res)
-                tasks = [asyncio.create_task(worker()) for _ in range(max(1, st.workers))]
+                        item = await prev_.receive()
+                        res = await st_.func(item)  # type: ignore
+                        await nxt_.send(res)
+
+                for _ in range(max(1, st.workers)):
+                    asyncio.create_task(worker())
                 prev = nxt  # type: ignore
-            async def pump():
+
+            async def pump(prev_=prev):
                 while True:
-                    v = await prev.receive()
+                    v = await prev_.receive()
                     await out.send(v)
             asyncio.create_task(pump())
             await asyncio.sleep(0)

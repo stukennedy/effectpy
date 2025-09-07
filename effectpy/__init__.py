@@ -3,7 +3,11 @@ from .context import Context
 from .scope import Scope
 from .layer import Layer, from_resource
 from .runtime import Runtime, Fiber
-from .anyio_runtime import AnyIORuntime, AnyIOFiber
+try:
+    from .anyio_runtime import AnyIORuntime, AnyIOFiber  # type: ignore
+except Exception:  # anyio may be optional
+    AnyIORuntime = None  # type: ignore
+    AnyIOFiber = None  # type: ignore
 from .channel import Channel
 from .pipeline import Pipeline, stage
 from .logger import ConsoleLogger, LoggerLayer
