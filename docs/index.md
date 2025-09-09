@@ -3,19 +3,13 @@ title: effectpy
 description: Effect-inspired structured async for Python with guaranteed resource safety, rich error handling, and built-in observability
 ---
 
-<div align="center">
-
-<img src="https://raw.githubusercontent.com/stukennedy/effectpy/main/img/effectpy.png" alt="effectpy logo" width="200" />
+![effectpy logo](https://raw.githubusercontent.com/stukennedy/effectpy/main/img/effectpy.png)
 
 # effectpy
 
 **Effect-inspired structured async for Python**
 
-[📦 Get Started](installation/) • [🚀 Quick Start](quickstart/) • [💻 GitHub](https://github.com/stukennedy/effectpy)
-
-</div>
-
----
+**Quick Links:** [📦 Get Started](installation.md) | [🚀 Quick Start](quickstart.md) | [💻 View on GitHub](https://github.com/stukennedy/effectpy)
 
 ## Why effectpy?
 
