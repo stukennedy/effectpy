@@ -39,3 +39,11 @@ install-anyio:
 
 install-aiohttp:
 	uv pip install aiohttp
+docs-serve:
+	uv run mkdocs serve -a localhost:8000
+
+docs-build:
+	uv run mkdocs build --clean
+
+docs-deploy:
+	uv run mkdocs gh-deploy --force

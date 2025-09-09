@@ -1,0 +1,4 @@
+# stream
+
+::: effectpy.stream
+

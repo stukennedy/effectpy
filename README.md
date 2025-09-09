@@ -1,10 +1,12 @@
-
-
 ![EffectPy Architecture](img/effectpy_arch.png)
 
 # effectpy
 
-Effect/ZIO-inspired structured async for Python.
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://stukennedy.github.io/effectpy)
+
+Effect-inspired structured async for Python.
+
+- Docs: https://stukennedy.github.io/effectpy
 
 ## Why effectpy?
 
@@ -12,23 +14,29 @@ Effect/ZIO-inspired structured async for Python.
 **effectpy** brings the semantics of [Effect TS](https://effect.website) / [ZIO](https://zio.dev) into Python, giving you:
 
 - **Structured async without spaghetti**
+
   - Every async operation is an `Effect` you can compose, transform, retry, race, zip, and run in parallel.
 
 - **Automatic resource safety**
+
   - `Layer` + `Scope` ensure resources are acquired and released correctly, in order.
 
 - **Structured errors, not random exceptions**
+
   - Failures are rich `Cause` trees: fail, die, interrupt, both, then — with annotations and stack traces.
 
 - **Deterministic concurrency**
+
   - Built-ins for `race`, `zip_par`, `for_each_par`, cancellation masks, `FiberRef` locals.
   - Works with both `asyncio` and `anyio` (Trio).
 
 - **Observability baked in**
+
   - `instrument("name", tags={...})` logs, records metrics, and traces.
   - Export spans/metrics to OTLP/Prometheus/OpenTelemetry.
 
 - **Composable streaming and pipelines**
+
   - `StreamE` with error channel.
   - Channels + Pipelines with backpressure.
 
@@ -91,6 +99,7 @@ OUT: 10
 ---
 
 effectpy = **`asyncio` with guardrails and batteries**:
+
 - Guardrails: structured errors, cancellation, resource safety
 - Batteries: observability, retries, pipelines, test clocks, supervision
 
@@ -133,6 +142,7 @@ All examples are runnable directly:
 - uv: `uv run python -m unittest discover -s tests -p 'test_*.py' -v`
 
 Optional deps for specific examples:
+
 - AnyIO example: install `anyio` (e.g., `uv pip install anyio`) or use a venv.
 - Exporters demo: install `aiohttp` (e.g., `uv pip install aiohttp`).
 
@@ -167,13 +177,13 @@ Or install in editable mode for a longer dev session:
 
 ## Publishing to PyPI
 
-1) Set version in `pyproject.toml` (under `[project] version`).
+1. Set version in `pyproject.toml` (under `[project] version`).
 
-2) Build artifacts (wheel + sdist):
+2. Build artifacts (wheel + sdist):
 
 - `uv build`
 
-3) (Optional) Verify the distribution:
+3. (Optional) Verify the distribution:
 
 - `uvx twine check dist/*`
 
@@ -186,5 +196,6 @@ Or install in editable mode for a longer dev session:
 - `uvx twine upload dist/*`
 
 Notes:
+
 - You’ll need PyPI credentials configured (via `~/.pypirc` or environment variables). `uvx` runs tools in ephemeral environments.
 - If your `uv` version supports `uv publish`, you can use `uv publish` instead of the twine steps above.

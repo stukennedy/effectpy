@@ -13,6 +13,12 @@ dependencies = ["aiohttp>=3.12.15", "anyio>=4.10.0"]
 [project.optional-dependencies]
 anyio = ["anyio>=4.0"]
 exporters = ["aiohttp>=3.8"]
+docs = [
+  "mkdocs>=1.5",
+  "mkdocs-material>=9.5",
+  "mkdocstrings[python]>=0.24",
+  "mkdocs-autorefs>=1.0",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["effectpy"]

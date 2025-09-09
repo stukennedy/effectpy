@@ -1,0 +1,4 @@
+# effectpy (package)
+
+::: effectpy
+

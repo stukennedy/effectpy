@@ -1,0 +1,56 @@
+site_name: effectpy
+site_description: Effect/ZIO-inspired structured async for Python
+site_url: https://stukennedy.github.io/effectpy
+repo_url: https://github.com/stukennedy/effectpy
+repo_name: stukennedy/effectpy
+theme:
+  name: material
+  logo: https://raw.githubusercontent.com/stukennedy/effectpy/main/img/effectpy.png
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - content.code.copy
+    - toc.integrate
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - tables
+  - codehilite
+plugins:
+  - search
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: false
+            show_root_heading: true
+            docstring_style: google
+nav:
+  - Overview: index.md
+  - Getting Started:
+      - Installation: installation.md
+      - Quick Start: quickstart.md
+  - Concepts:
+      - Effects: concepts/effects.md
+      - Layers & Scope: concepts/layers_scope.md
+      - Runtime & Fibers: concepts/runtime_fibers.md
+      - Streams & Channels: concepts/streams_channels.md
+      - Observability: concepts/observability.md
+  - Guides:
+      - Concurrency: guides/concurrency.md
+      - Retry & Schedules: guides/retry_schedules.md
+      - Services & Env: guides/services_env.md
+  - API Reference:
+      - effectpy (top-level): reference/effectpy.md
+      - core: reference/core.md
+      - stream: reference/stream.md
+      - runtime: reference/runtime.md
+      - layer: reference/layer.md
+      - context & scope: reference/context_scope.md
+      - observability: reference/observability.md
