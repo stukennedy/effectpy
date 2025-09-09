@@ -5,17 +5,17 @@ description: Effect-inspired structured async for Python with guaranteed resourc
 
 <div align="center">
 
-![effectpy logo](https://raw.githubusercontent.com/stukennedy/effectpy/main/img/effectpy.png){ width="200" }
+<img src="https://raw.githubusercontent.com/stukennedy/effectpy/main/img/effectpy.png" alt="effectpy logo" width="200" />
 
 # effectpy
 
 **Effect-inspired structured async for Python**
 
-[Get Started](installation.md){ .md-button .md-button--primary } 
-[Quick Start](quickstart.md){ .md-button } 
-[View on GitHub](https://github.com/stukennedy/effectpy){ .md-button }
+[📦 Get Started](installation/) • [🚀 Quick Start](quickstart/) • [💻 GitHub](https://github.com/stukennedy/effectpy)
 
 </div>
+
+---
 
 ## Why effectpy?
 

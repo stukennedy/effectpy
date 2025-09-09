@@ -9,6 +9,38 @@ from .tracer import Tracer
 A = TypeVar('A'); E = TypeVar('E'); R = TypeVar('R')
 
 def instrument(name: str, eff: Effect[R, E, A], tags: dict[str, str] | None = None) -> Effect[R, E, A]:
+    """Add automatic observability to an effect.
+    
+    Wraps an effect with automatic logging, metrics, and tracing. The wrapped
+    effect will emit structured logs, record performance metrics, and create
+    distributed trace spans.
+    
+    Args:
+        name: Operation name for logs/metrics/traces
+        eff: The effect to instrument
+        tags: Optional metadata tags for filtering and grouping
+        
+    Returns:
+        The wrapped effect with observability
+        
+    Example:
+        ```python
+        # Basic instrumentation
+        instrumented = instrument("user.fetch", fetch_user(123))
+        
+        # With tags for context
+        instrumented = instrument(
+            "api.request",
+            make_api_call(),
+            tags={\"method\": \"GET\", \"endpoint\": \"/users\", \"version\": \"v1\"}
+        )
+        
+        # Observability is automatic when services are available
+        scope = Scope()
+        env = await (LoggerLayer | MetricsLayer | TracerLayer).build_scoped(Context(), scope)
+        result = await instrumented._run(env)
+        ```
+    """
     async def run(ctx: Context):
         logger = None; metrics=None; tracer=None
         try: logger = ctx.get(ConsoleLogger)

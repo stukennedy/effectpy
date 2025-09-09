@@ -10,11 +10,30 @@ R = TypeVar("R"); E = TypeVar("E"); A = TypeVar("A"); B = TypeVar("B"); E2 = Typ
 
 @dataclass
 class Exit(Generic[E, A]):
+    """Represents the result of running an Effect.
+    
+    An Exit can either be successful (with a value) or failed (with a cause).
+    This is used internally by the Effect system to handle both success and failure cases.
+    
+    Attributes:
+        success: True if the effect succeeded, False if it failed
+        value: The success value if successful, None otherwise
+        cause: The failure cause if failed, None otherwise
+    """
     success: bool
     value: Optional[A] = None
     cause: Optional["Cause[E]"] = None
 
 class Failure(Exception, Generic[E]):
+    """Exception raised when an Effect fails.
+    
+    This exception carries structured error information including the original error
+    and any annotations that were added during effect composition.
+    
+    Args:
+        error: The original error value
+        annotations: Optional list of annotation strings for debugging
+    """
     def __init__(self, error: E, annotations: Optional[list[str]] = None):
         super().__init__(repr(error)); self.error = error; self.annotations = list(annotations or [])
 
@@ -25,6 +44,22 @@ class _LayerLike(Protocol):
 
 @dataclass(frozen=True)
 class Cause(Generic[E]):
+    """Structured representation of Effect failures.
+    
+    Cause provides rich error information that can represent:
+    - Business logic failures (fail)
+    - Unexpected exceptions (die) 
+    - Cancellation signals (interrupt)
+    - Composed failures (both/then)
+    
+    Attributes:
+        kind: Type of failure ('fail', 'die', 'interrupt', 'both', 'then')
+        left: Left child cause for composed failures
+        right: Right child cause for composed failures
+        error: The business logic error for 'fail' causes
+        defect: The exception for 'die' causes
+        annotations: List of debugging annotations
+    """
     kind: str
     left: Optional["Cause[E]"] = None
     right: Optional["Cause[E]"] = None
@@ -33,6 +68,15 @@ class Cause(Generic[E]):
     annotations: list[str] = None
 
     def render(self, indent: str = "", include_traces: bool = True) -> str:
+        """Render this Cause as a human-readable string.
+        
+        Args:
+            indent: String to use for indentation
+            include_traces: Whether to include stack traces for defects
+            
+        Returns:
+            Formatted string representation of the cause tree
+        """
         def line(s: str) -> str: return indent + s + "\n"
         notes = ""
         if self.annotations:
@@ -53,41 +97,208 @@ class Cause(Generic[E]):
         return notes + line(f"Unknown({self.kind})")
 
     @staticmethod
-    def fail(e: E) -> "Cause[E]": return Cause(kind='fail', error=e, annotations=[])
+    def fail(e: E) -> "Cause[E]":
+        """Create a Cause representing a business logic failure.
+        
+        Args:
+            e: The error value
+            
+        Returns:
+            A new Cause with kind='fail'
+        """
+        return Cause(kind='fail', error=e, annotations=[])
     @staticmethod
-    def die(ex: BaseException) -> "Cause[E]": return Cause(kind='die', defect=ex, annotations=[])
+    def die(ex: BaseException) -> "Cause[E]":
+        """Create a Cause representing an unexpected exception.
+        
+        Args:
+            ex: The exception that was thrown
+            
+        Returns:
+            A new Cause with kind='die'
+        """
+        return Cause(kind='die', defect=ex, annotations=[])
     @staticmethod
-    def interrupt() -> "Cause[E]": return Cause(kind='interrupt', annotations=[])
+    def interrupt() -> "Cause[E]":
+        """Create a Cause representing cancellation/interruption.
+        
+        Returns:
+            A new Cause with kind='interrupt'
+        """
+        return Cause(kind='interrupt', annotations=[])
     @staticmethod
-    def both(l: "Cause[E]", r: "Cause[E]") -> "Cause[E]": return Cause(kind='both', left=l, right=r, annotations=[])
+    def both(l: "Cause[E]", r: "Cause[E]") -> "Cause[E]":
+        """Compose two causes representing concurrent failures.
+        
+        Args:
+            l: Left cause
+            r: Right cause
+            
+        Returns:
+            A new Cause with kind='both' containing both failures
+        """
+        return Cause(kind='both', left=l, right=r, annotations=[])
     @staticmethod
-    def then(l: "Cause[E]", r: "Cause[E]") -> "Cause[E]": return Cause(kind='then', left=l, right=r, annotations=[])
+    def then(l: "Cause[E]", r: "Cause[E]") -> "Cause[E]":
+        """Compose two causes representing sequential failures.
+        
+        Args:
+            l: First cause
+            r: Second cause
+            
+        Returns:
+            A new Cause with kind='then' representing sequential failure
+        """
+        return Cause(kind='then', left=l, right=r, annotations=[])
 
 def annotate_cause(c: Cause[E], note: str) -> Cause[E]:
+    """Add an annotation to a Cause for debugging purposes.
+    
+    Args:
+        c: The cause to annotate
+        note: The annotation string to add
+        
+    Returns:
+        A new Cause with the added annotation
+    """
     notes = list(c.annotations or []); notes.append(note)
     return Cause(kind=c.kind, left=c.left, right=c.right, error=c.error, defect=c.defect, annotations=notes)
 
 class Context: ...
 
 class Effect(Generic[R, E, A]):
+    """The core abstraction for async computations in effectpy.
+    
+    An Effect[R, E, A] represents a lazy async computation that:
+    - Requires environment R (services from Context)
+    - May fail with error E
+    - Succeeds with value A
+    
+    Effects are lazy - they describe computations but don't execute until
+    you call ._run(context). This enables powerful composition and optimization.
+    
+    Type Parameters:
+        R: Environment type - what services this effect needs
+        E: Error type - how this effect can fail
+        A: Success type - what this effect returns on success
+        
+    Example:
+        ```python
+        # Simple effect that always succeeds
+        simple = succeed(42)
+        
+        # Effect that may fail
+        risky = fail("something went wrong")
+        
+        # Composed effect
+        composed = succeed(10).map(lambda x: x * 2).flat_map(lambda x: succeed(str(x)))
+        
+        # Run the effect
+        result = await composed._run(Context())
+        ```
+    """
     def __init__(self, run: Callable[[Context], Awaitable[A]]): self._run_impl = run
-    async def _run(self, ctx: "Context") -> A: return await self._run_impl(ctx)
+    async def _run(self, ctx: "Context") -> A:
+        """Execute this effect with the given context.
+        
+        Args:
+            ctx: The context containing required services
+            
+        Returns:
+            The success value
+            
+        Raises:
+            Failure: If the effect fails with a business logic error
+            Exception: If the effect dies with an unexpected exception
+        """
+        return await self._run_impl(ctx)
 
     def map(self, f: Callable[[A], B]) -> "Effect[R, E, B]":
+        """Transform the success value of this effect.
+        
+        If this effect succeeds with value A, apply function f to get value B.
+        If this effect fails, the error passes through unchanged.
+        
+        Args:
+            f: Function to transform the success value
+            
+        Returns:
+            A new effect with transformed success type
+            
+        Example:
+            ```python
+            doubled = succeed(21).map(lambda x: x * 2)  # Effect[Any, None, int]
+            result = await doubled._run(Context())  # 42
+            ```
+        """
         async def run(ctx: Context): return f(await self._run(ctx))
         return Effect(run)
 
     def flat_map(self, f: Callable[[A], "Effect[R, E, B]"]) -> "Effect[R, E, B]":
+        """Chain this effect with another effect-producing function.
+        
+        If this effect succeeds with value A, apply function f to get a new Effect[R, E, B].
+        If this effect fails, the error passes through without calling f.
+        
+        Args:
+            f: Function that takes the success value and returns a new effect
+            
+        Returns:
+            A new effect representing the chained computation
+            
+        Example:
+            ```python
+            def fetch_user(id: int) -> Effect[Any, str, User]: ...
+            def fetch_posts(user: User) -> Effect[Any, str, List[Post]]: ...
+            
+            user_posts = fetch_user(123).flat_map(fetch_posts)
+            ```
+        """
         async def run(ctx: Context): a = await self._run(ctx); return await f(a)._run(ctx)
         return Effect(run)
 
     def catch_all(self, f: Callable[[E], "Effect[R, E2, A]"]) -> "Effect[R, E2, A]":
+        """Handle all failures from this effect.
+        
+        If this effect fails with error E, apply function f to get a recovery Effect.
+        If this effect succeeds, the success value passes through unchanged.
+        
+        Args:
+            f: Function to handle the error and return a recovery effect
+            
+        Returns:
+            A new effect with potentially different error type
+            
+        Example:
+            ```python
+            safe_divide = divide(10, 0).catch_all(
+                lambda error: succeed(f"Error handled: {error}")
+            )
+            ```
+        """
         async def run(ctx: Context):
             try: return await self._run(ctx)
             except Failure as fe: return await f(fe.error)._run(ctx)
         return Effect(run)
 
     def provide(self, layer: _LayerLike) -> "Effect[Any, E, A]":
+        """Run this effect with additional services from a layer.
+        
+        The layer is built, this effect runs with the enhanced context,
+        then the layer is torn down - even if the effect fails.
+        
+        Args:
+            layer: Layer providing additional services
+            
+        Returns:
+            Effect that no longer requires the layer's services
+            
+        Example:
+            ```python
+            effect_with_db = my_effect.provide(DatabaseLayer)
+            result = await effect_with_db._run(Context())  # DatabaseLayer services available
+            ```
+        """
         async def run(ctx: Context):
             sub = await layer.build(ctx)
             try: return await self._run(sub)
@@ -256,14 +467,61 @@ class Effect(Generic[R, E, A]):
         return Effect(run)
 
 def succeed(a: A) -> Effect[Any, Any, A]:
+    """Create an effect that always succeeds with the given value.
+    
+    Args:
+        a: The value to succeed with
+        
+    Returns:
+        An effect that immediately succeeds with the value
+        
+    Example:
+        ```python
+        result = await succeed(42)._run(Context())  # 42
+        ```
+    """
     async def run(_: Context): return a
     return Effect(run)
 
 def fail(e: E) -> Effect[Any, E, Any]:
+    """Create an effect that always fails with the given error.
+    
+    Args:
+        e: The error to fail with
+        
+    Returns:
+        An effect that immediately fails with the error
+        
+    Example:
+        ```python
+        try:
+            await fail("something went wrong")._run(Context())
+        except Failure as f:
+            print(f.error)  # "something went wrong"
+        ```
+    """
     async def run(_: Context): raise Failure(e)
     return Effect(run)
 
 def from_async(thunk: Callable[[], Awaitable[A]]) -> Effect[Any, Any, A]:
+    """Convert an async function to an effect.
+    
+    Args:
+        thunk: Async function that takes no arguments
+        
+    Returns:
+        An effect that runs the async function
+        
+    Example:
+        ```python
+        async def fetch_data():
+            await asyncio.sleep(0.1)
+            return "data"
+        
+        effect = from_async(fetch_data)
+        result = await effect._run(Context())  # "data"
+        ```
+    """
     async def run(_: Context): return await thunk()
     return Effect(run)
 
@@ -281,10 +539,48 @@ def scoped(f: Callable[[Scope], Effect[Any, E, A]]) -> Effect[Any, E, A]:
     return Effect(run)
 
 def sync(thunk: Callable[[], A]) -> Effect[Any, Any, A]:
+    """Convert a synchronous function to an effect.
+    
+    Args:
+        thunk: Synchronous function that takes no arguments
+        
+    Returns:
+        An effect that runs the function
+        
+    Example:
+        ```python
+        import random
+        
+        random_effect = sync(lambda: random.randint(1, 100))
+        result = await random_effect._run(Context())  # Random number
+        ```
+    """
     async def run(_: Context): return thunk()
     return Effect(run)
 
 def attempt(thunk: Callable[[], A], on_error: Callable[[BaseException], E]) -> Effect[Any, E, A]:
+    """Safely execute a function that might throw exceptions.
+    
+    Any exceptions are caught and converted to Effect failures using the on_error function.
+    
+    Args:
+        thunk: Function that might throw exceptions
+        on_error: Function to convert exceptions to error values
+        
+    Returns:
+        An effect that either succeeds or fails gracefully
+        
+    Example:
+        ```python
+        def risky_parse(text: str) -> int:
+            return int(text)  # Might throw ValueError
+        
+        safe_parse = attempt(
+            lambda: risky_parse("not_a_number"),
+            lambda ex: f"Parse error: {ex}"
+        )
+        ```
+    """
     async def run(_: Context):
         try: return thunk()
         except BaseException as ex: raise Failure(on_error(ex))
@@ -311,6 +607,29 @@ def uninterruptibleMask(f: Callable[[Callable[[Effect[R,E,A]], Effect[R,E,A]]], 
 
 # Resource safety: acquire/release semantics (aka bracket)
 def acquire_release(acquire: Effect[Any, E, A], release: Callable[[A], Effect[Any, Any, Any]], use: Callable[[A], Effect[Any, E2, B]]) -> Effect[Any, E | E2, B]:
+    """Resource-safe acquire/release pattern (bracket operation).
+    
+    Guarantees that the release function is called even if the use function fails
+    or is interrupted. This is the foundation for safe resource management.
+    
+    Args:
+        acquire: Effect to acquire the resource
+        release: Function to release the resource (called even on failure)
+        use: Function to use the resource
+        
+    Returns:
+        Effect that safely manages the resource lifecycle
+        
+    Example:
+        ```python
+        def with_file(path: str) -> Effect[Any, str, str]:
+            return acquire_release(
+                acquire=from_async(lambda: open(path, 'r')),
+                release=lambda f: sync(f.close),
+                use=lambda f: from_async(f.read)
+            )
+        ```
+    """
     async def run(ctx: Context):
         # Use uninterruptible mask to acquire/release safely, restore around use
         async def inner(_: Context):
@@ -330,6 +649,28 @@ def acquire_release(acquire: Effect[Any, E, A], release: Callable[[A], Effect[An
 
 # Parallel zip: runs both effects concurrently, cancels the other on failure
 def zip_par(e1: Effect[Any, E, A], e2: Effect[Any, E, B]) -> Effect[Any, E, Tuple[A, B]]:
+    """Run two effects concurrently and combine their results.
+    
+    Both effects start simultaneously. If either fails, the other is cancelled.
+    Returns a tuple of both results if both succeed.
+    
+    Args:
+        e1: First effect to run
+        e2: Second effect to run
+        
+    Returns:
+        Effect that succeeds with tuple of both results
+        
+    Example:
+        ```python
+        user_and_posts = await zip_par(
+            fetch_user(123),
+            fetch_posts(123)
+        )._run(Context())
+        
+        user, posts = user_and_posts
+        ```
+    """
     async def run(ctx: Context):
         async def r1(): return await e1._run(ctx)
         async def r2(): return await e2._run(ctx)
@@ -354,6 +695,27 @@ def zip_par(e1: Effect[Any, E, A], e2: Effect[Any, E, B]) -> Effect[Any, E, Tupl
 
 # Race: returns the first to complete (success or failure), cancels the other
 def race(e1: Effect[Any, E, A], e2: Effect[Any, E, A]) -> Effect[Any, E, A]:
+    """Run two effects concurrently, return the first to succeed.
+    
+    Both effects start simultaneously. The first to succeed wins,
+    and the other effect is cancelled.
+    
+    Args:
+        e1: First effect to race
+        e2: Second effect to race
+        
+    Returns:
+        Effect that succeeds with the result of whichever effect finishes first
+        
+    Example:
+        ```python
+        # Try primary service, but use backup if it's faster
+        result = await race(
+            fetch_from_primary(),
+            fetch_from_backup()
+        )._run(Context())
+        ```
+    """
     async def run(ctx: Context):
         async def r1(): return await e1._run(ctx)
         async def r2(): return await e2._run(ctx)
@@ -378,6 +740,29 @@ def race(e1: Effect[Any, E, A], e2: Effect[Any, E, A]) -> Effect[Any, E, A]:
 # for_each_par: run f over items with bounded concurrency, preserving order
 T = TypeVar("T")
 def for_each_par(items: Iterable[T], f: Callable[[T], Effect[Any, E, A]], parallelism: int = 10) -> Effect[Any, E, List[A]]:
+    """Apply an effect-producing function to each item in parallel.
+    
+    Processes items concurrently with limited parallelism. If any effect fails,
+    all others are cancelled.
+    
+    Args:
+        items: Collection of items to process
+        f: Function that converts each item to an effect
+        parallelism: Maximum number of concurrent operations (default: 10)
+        
+    Returns:
+        Effect that succeeds with list of all results in original order
+        
+    Example:
+        ```python
+        user_ids = [1, 2, 3, 4, 5]
+        users = await for_each_par(
+            user_ids,
+            fetch_user,
+            parallelism=3  # Max 3 concurrent fetches
+        )._run(Context())
+        ```
+    """
     async def run(ctx: Context):
         sem = asyncio.Semaphore(max(1, parallelism))
         seq = list(items)
