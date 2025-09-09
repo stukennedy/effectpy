@@ -558,8 +558,8 @@ class ServiceSupervisor:
 
 ## What's Next?
 
-- :octicons-arrow-right-24: [Concurrency Guide](../guides/concurrency.md) - Practical concurrent programming patterns
-- :octicons-arrow-right-24: [Effects](effects.md) - Understanding the Effect system
-- :octicons-arrow-right-24: [Streams & Channels](streams_channels.md) - Concurrent data processing
-- :octicons-arrow-right-24: [Runtime API Reference](../reference/runtime.md) - Complete API documentation
+- **→ [Concurrency Guide](../guides/concurrency.md)** - Practical concurrent programming patterns
+- **→ [Effects](effects.md)** - Understanding the Effect system
+- **→ [Streams & Channels](streams_channels.md)** - Concurrent data processing
+- **→ [Runtime API Reference](../reference/runtime.md)** - Complete API documentation
 

@@ -7,24 +7,21 @@
 
 ## Quick Install
 
-=== "pip"
+**Using pip (most common):**
+```bash
+pip install effectpy
+```
 
-    ```bash
-    pip install effectpy
-    ```
+**Using uv (recommended for new projects):**
+```bash
+uv add effectpy
+```
 
-=== "uv (recommended)"
-
-    ```bash
-    uv add effectpy
-    ```
-
-=== "conda"
-
-    ```bash
-    # Coming soon to conda-forge
-    pip install effectpy
-    ```
+**Using conda:**
+```bash
+# Coming soon to conda-forge
+pip install effectpy
+```
 
 ## Optional Dependencies
 
@@ -34,61 +31,59 @@ effectpy has several optional dependencies for enhanced functionality:
 
 For Trio/AnyIO backend support:
 
-=== "pip"
-    ```bash
-    pip install effectpy[anyio]
-    ```
+**With pip:**
+```bash
+pip install effectpy[anyio]
+```
 
-=== "uv"
-    ```bash
-    uv add "effectpy[anyio]"
-    ```
+**With uv:**
+```bash
+uv add "effectpy[anyio]"
+```
 
 ### Exporters
 
 For OpenTelemetry HTTP exporters (requires `aiohttp`):
 
-=== "pip"
-    ```bash
-    pip install effectpy[exporters]
-    ```
+**With pip:**
+```bash
+pip install effectpy[exporters]
+```
 
-=== "uv"
-    ```bash  
-    uv add "effectpy[exporters]"
-    ```
+**With uv:**
+```bash  
+uv add "effectpy[exporters]"
+```
 
 ### All Optional Dependencies
 
-=== "pip"
-    ```bash
-    pip install effectpy[anyio,exporters]
-    ```
+**With pip:**
+```bash
+pip install effectpy[anyio,exporters]
+```
 
-=== "uv"
-    ```bash
-    uv add "effectpy[anyio,exporters]"
-    ```
+**With uv:**
+```bash
+uv add "effectpy[anyio,exporters]"
+```
 
 ## Development Installation
 
 For contributing or running examples:
 
-=== "uv (recommended)"
+**Using uv (recommended):**
+```bash
+git clone https://github.com/stukennedy/effectpy.git
+cd effectpy
+uv sync
+```
 
-    ```bash
-    git clone https://github.com/stukennedy/effectpy.git
-    cd effectpy
-    uv sync
-    ```
-
-=== "pip"
-
-    ```bash
-    git clone https://github.com/stukennedy/effectpy.git
-    cd effectpy
-    pip install -e ".[anyio,exporters,docs]"
-    ```
+**Using pip:**
+```bash
+git clone https://github.com/stukennedy/effectpy.git
+cd effectpy
+pip install -e ".[anyio,exporters,docs]"
+```
 
 ## Verify Installation
 
@@ -131,9 +126,9 @@ Instrumented: Hello effectpy!
 
 ## What's Next?
 
-- :octicons-arrow-right-24: [Quick Start Tutorial](quickstart.md)
-- :octicons-arrow-right-24: [Core Concepts](concepts/effects.md)
-- :octicons-arrow-right-24: [Example Applications](quickstart.md#examples)
+- **→ [Quick Start Tutorial](quickstart.md)**
+- **→ [Core Concepts](concepts/effects.md)**
+- **→ [Example Applications](quickstart.md#examples)**
 
 ## Troubleshooting
 

@@ -591,8 +591,8 @@ async def test_user_service():
 
 ## What's Next?
 
-- :octicons-arrow-right-24: [Effects](effects.md) - Working with effectpy computations
-- :octicons-arrow-right-24: [Runtime & Fibers](runtime_fibers.md) - Concurrent execution
-- :octicons-arrow-right-24: [Services Guide](../guides/services_env.md) - Dependency injection patterns
-- :octicons-arrow-right-24: [Context & Scope API](../reference/context_scope.md) - Complete API reference
+- **→ [Effects](effects.md)** - Working with effectpy computations
+- **→ [Runtime & Fibers](runtime_fibers.md)** - Concurrent execution
+- **→ [Services Guide](../guides/services_env.md)** - Dependency injection patterns
+- **→ [Context & Scope API](../reference/context_scope.md)** - Complete API reference
 

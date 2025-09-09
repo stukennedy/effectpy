@@ -778,8 +778,8 @@ class PipelineMonitor:
 
 ## What's Next?
 
-- :octicons-arrow-right-24: [Concurrency Guide](../guides/concurrency.md) - Advanced concurrent programming patterns
-- :octicons-arrow-right-24: [Effects](effects.md) - Understanding the Effect system that powers streams
-- :octicons-arrow-right-24: [Runtime & Fibers](runtime_fibers.md) - Concurrent execution fundamentals  
-- :octicons-arrow-right-24: [Stream API Reference](../reference/stream.md) - Complete streaming API documentation
+- **→ [Concurrency Guide](../guides/concurrency.md)** - Advanced concurrent programming patterns
+- **→ [Effects](effects.md)** - Understanding the Effect system that powers streams
+- **→ [Runtime & Fibers](runtime_fibers.md)** - Concurrent execution fundamentals  
+- **→ [Stream API Reference](../reference/stream.md)** - Complete streaming API documentation
 

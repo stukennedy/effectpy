@@ -616,8 +616,8 @@ async def test_timeout_behavior():
 
 ## What's Next?
 
-- :octicons-arrow-right-24: [Runtime & Fibers](../concepts/runtime_fibers.md) - Deeper dive into concurrent execution
-- :octicons-arrow-right-24: [Streams & Channels](../concepts/streams_channels.md) - Streaming concurrency patterns
-- :octicons-arrow-right-24: [Retry & Schedules](retry_schedules.md) - Robust error recovery
-- :octicons-arrow-right-24: [Core API Reference](../reference/core.md) - Complete concurrency API
+- **→ [Runtime & Fibers](../concepts/runtime_fibers.md)** - Deeper dive into concurrent execution
+- **→ [Streams & Channels](../concepts/streams_channels.md)** - Streaming concurrency patterns
+- **→ [Retry & Schedules](retry_schedules.md)** - Robust error recovery
+- **→ [Core API Reference](../reference/core.md)** - Complete concurrency API
 

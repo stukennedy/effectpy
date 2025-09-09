@@ -3,75 +3,53 @@ title: effectpy
 description: Effect-inspired structured async for Python with guaranteed resource safety, rich error handling, and built-in observability
 ---
 
-<div class="hero-section" style="text-align: center; margin-bottom: 3rem;">
-  <img src="https://raw.githubusercontent.com/stukennedy/effectpy/main/img/effectpy.png" alt="effectpy logo" width="200" style="margin-bottom: 1rem;" />
-  
-  <h1 style="font-size: 3rem; margin-bottom: 1rem; background: linear-gradient(45deg, #3f51b5, #9c27b0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">effectpy</h1>
-  
-  <p style="font-size: 1.3rem; color: #666; margin-bottom: 2rem;">Effect-inspired structured async for Python</p>
-  
-  <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-    <a href="installation/" class="md-button md-button--primary">Get Started</a>
-    <a href="quickstart/" class="md-button">Quick Start</a>
-    <a href="https://github.com/stukennedy/effectpy" class="md-button">View on GitHub</a>
-  </div>
+<div align="center">
+
+![effectpy logo](https://raw.githubusercontent.com/stukennedy/effectpy/main/img/effectpy.png){ width="200" }
+
+# effectpy
+
+**Effect-inspired structured async for Python**
+
+[Get Started](installation.md){ .md-button .md-button--primary } 
+[Quick Start](quickstart.md){ .md-button } 
+[View on GitHub](https://github.com/stukennedy/effectpy){ .md-button }
+
 </div>
 
 ## Why effectpy?
 
 `asyncio` is powerful but messy: exceptions leak, cancellations are tricky, resources are forgotten, and observability is bolted on later. **effectpy** brings the battle-tested semantics of [Effect TS](https://effect.website) and [ZIO](https://zio.dev) to Python.
 
-<div class="grid cards" markdown>
+### ✅ **Guaranteed Resource Safety**
+Every resource is automatically cleaned up in the correct order, even when errors occur or operations are cancelled.
 
--   :material-shield-check:{ .lg .middle } **Guaranteed Resource Safety**
+**→ [Learn about Layers & Scope](concepts/layers_scope.md)**
 
-    ---
+### ⚡ **Structured Concurrency**  
+Race, zip, and parallelize operations with deterministic cancellation. No more leaked tasks or zombie coroutines.
 
-    Every resource is automatically cleaned up in the correct order, even when errors occur or operations are cancelled.
+**→ [Explore concurrency patterns](guides/concurrency.md)**
 
-    [:octicons-arrow-right-24: Learn about Layers & Scope](concepts/layers_scope.md)
+### 🐛 **Rich Error Handling**
+Failures are first-class citizens with structured `Cause` trees, annotations, and stack traces. No more mysterious exceptions.
 
--   :material-lightning-bolt:{ .lg .middle } **Structured Concurrency**
+**→ [Understanding Effects](concepts/effects.md)**
 
-    ---
+### 👁️ **Built-in Observability**
+Automatic logging, metrics, and tracing with OpenTelemetry integration. Understand your async code's behavior.
 
-    Race, zip, and parallelize operations with deterministic cancellation. No more leaked tasks or zombie coroutines.
+**→ [Observability guide](concepts/observability.md)**
 
-    [:octicons-arrow-right-24: Explore concurrency patterns](guides/concurrency.md)
+### 🔧 **Streaming & Pipelines**
+Process data streams with backpressure, error channels, and parallel stages. Built for real-world data processing.
 
--   :material-bug:{ .lg .middle } **Rich Error Handling**
+**→ [Streams & Channels](concepts/streams_channels.md)**
 
-    ---
+### 🧪 **Test-Friendly**
+Deterministic test clocks, controllable time, and supervision make testing async code predictable.
 
-    Failures are first-class citizens with structured `Cause` trees, annotations, and stack traces. No more mysterious exceptions.
-
-    [:octicons-arrow-right-24: Understanding Effects](concepts/effects.md)
-
--   :material-eye:{ .lg .middle } **Built-in Observability**
-
-    ---
-
-    Automatic logging, metrics, and tracing with OpenTelemetry integration. Understand your async code's behavior.
-
-    [:octicons-arrow-right-24: Observability guide](concepts/observability.md)
-
--   :material-pipe:{ .lg .middle } **Streaming & Pipelines**
-
-    ---
-
-    Process data streams with backpressure, error channels, and parallel stages. Built for real-world data processing.
-
-    [:octicons-arrow-right-24: Streams & Channels](concepts/streams_channels.md)
-
--   :material-test-tube:{ .lg .middle } **Test-Friendly**
-
-    ---
-
-    Deterministic test clocks, controllable time, and supervision make testing async code predictable.
-
-    [:octicons-arrow-right-24: Testing patterns](guides/concurrency.md#testing-with-testclock)
-
-</div>
+**→ [Testing patterns](guides/concurrency.md#testing-with-testclock)**
 
 ## Quick Example
 
@@ -151,38 +129,22 @@ Result: 10
 
 ## Getting Started
 
-<div class="grid cards" markdown>
+### 📦 **Installation**  
+Install effectpy and optional dependencies
 
--   :material-download:{ .lg .middle } **Installation**
+**→ [Installation guide](installation.md)**
 
-    ---
+### 🚀 **Quick Start**
+Build your first effectpy application  
 
-    Install effectpy and optional dependencies
+**→ [Quick start tutorial](quickstart.md)**
 
-    [:octicons-arrow-right-24: Installation guide](installation.md)
+### 📚 **Core Concepts**
+Understand Effects, Layers, Scopes, and more
 
--   :material-rocket-launch:{ .lg .middle } **Quick Start**
+**→ [Learn the concepts](concepts/effects.md)**
 
-    ---
+### 📖 **API Reference**  
+Detailed API documentation and examples
 
-    Build your first effectpy application
-
-    [:octicons-arrow-right-24: Quick start tutorial](quickstart.md)
-
--   :material-school:{ .lg .middle } **Core Concepts**
-
-    ---
-
-    Understand Effects, Layers, Scopes, and more
-
-    [:octicons-arrow-right-24: Learn the concepts](concepts/effects.md)
-
--   :material-code-braces:{ .lg .middle } **API Reference**
-
-    ---
-
-    Detailed API documentation and examples
-
-    [:octicons-arrow-right-24: Browse the API](reference/effectpy.md)
-
-</div>
+**→ [Browse the API](reference/effectpy.md)**

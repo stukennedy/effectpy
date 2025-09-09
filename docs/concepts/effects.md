@@ -431,8 +431,8 @@ async def with_resources_scoped():
 
 ## What's Next?
 
-- :octicons-arrow-right-24: [Layers & Scope](layers_scope.md) - Resource management
-- :octicons-arrow-right-24: [Runtime & Fibers](runtime_fibers.md) - Concurrent execution  
-- :octicons-arrow-right-24: [Concurrency Guide](../guides/concurrency.md) - Practical patterns
-- :octicons-arrow-right-24: [Core API Reference](../reference/core.md) - Complete API
+- **→ [Layers & Scope](layers_scope.md)** - Resource management
+- **→ [Runtime & Fibers](runtime_fibers.md)** - Concurrent execution  
+- **→ [Concurrency Guide](../guides/concurrency.md)** - Practical patterns
+- **→ [Core API Reference](../reference/core.md)** - Complete API
 

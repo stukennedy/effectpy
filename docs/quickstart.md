@@ -362,41 +362,25 @@ python -m examples.exporters_demo
 
 Now that you understand the basics, dive deeper into effectpy:
 
-<div class="grid cards" markdown>
+### 💡 **Core Concepts**
+Learn about Effects, Causes, Layers, and Scopes in detail
 
--   :material-lightbulb:{ .lg .middle } **Core Concepts**
+**→ [Effects](concepts/effects.md)**  
+**→ [Layers & Scope](concepts/layers_scope.md)**
 
-    ---
+### 🏁 **Concurrency**  
+Master structured concurrency, fibers, and parallel operations
 
-    Learn about Effects, Causes, Layers, and Scopes in detail
+**→ [Concurrency Guide](guides/concurrency.md)**  
+**→ [Runtime & Fibers](concepts/runtime_fibers.md)**
 
-    [:octicons-arrow-right-24: Effects](concepts/effects.md)
-    [:octicons-arrow-right-24: Layers & Scope](concepts/layers_scope.md)
+### 🔧 **Streaming**
+Build data processing pipelines with streams and channels
 
--   :material-racing:{ .lg .middle } **Concurrency**
+**→ [Streams & Channels](concepts/streams_channels.md)**
 
-    ---
+### 👁️ **Observability**
+Add logging, metrics, and tracing to your applications
 
-    Master structured concurrency, fibers, and parallel operations
-
-    [:octicons-arrow-right-24: Concurrency Guide](guides/concurrency.md)
-    [:octicons-arrow-right-24: Runtime & Fibers](concepts/runtime_fibers.md)
-
--   :material-pipe:{ .lg .middle } **Streaming**
-
-    ---
-
-    Build data processing pipelines with streams and channels
-
-    [:octicons-arrow-right-24: Streams & Channels](concepts/streams_channels.md)
-
--   :material-eye:{ .lg .middle } **Observability**
-
-    ---
-
-    Add logging, metrics, and tracing to your applications
-
-    [:octicons-arrow-right-24: Observability](concepts/observability.md)
-
-</div>
+**→ [Observability](concepts/observability.md)**
 

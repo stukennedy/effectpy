@@ -615,8 +615,8 @@ async def jaeger_integration():
 
 ## What's Next?
 
-- :octicons-arrow-right-24: [Effects](effects.md) - Learn how to instrument your effects
-- :octicons-arrow-right-24: [Layers & Scope](layers_scope.md) - Set up observability environments  
-- :octicons-arrow-right-24: [Concurrency Guide](../guides/concurrency.md) - Monitoring concurrent operations
-- :octicons-arrow-right-24: [Observability API Reference](../reference/observability.md) - Complete API documentation
+- **→ [Effects](effects.md)** - Learn how to instrument your effects
+- **→ [Layers & Scope](layers_scope.md)** - Set up observability environments  
+- **→ [Concurrency Guide](../guides/concurrency.md)** - Monitoring concurrent operations
+- **→ [Observability API Reference](../reference/observability.md)** - Complete API documentation
 
