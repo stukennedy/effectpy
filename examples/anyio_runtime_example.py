@@ -6,10 +6,12 @@ an informative message and exits gracefully.
 
 Run: python examples/anyio_runtime_example.py
 """
+
 import asyncio
 
 try:
     import anyio  # noqa: F401
+
     HAVE_ANYIO = True
 except Exception:
     HAVE_ANYIO = False

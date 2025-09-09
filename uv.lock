@@ -146,6 +146,10 @@ wheels = [
 name = "effectpy"
 version = "0.1.0"
 source = { editable = "." }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "anyio" },
+]
 
 [package.optional-dependencies]
 anyio = [
@@ -157,7 +161,9 @@ exporters = [
 
 [package.metadata]
 requires-dist = [
+    { name = "aiohttp", specifier = ">=3.12.15" },
     { name = "aiohttp", marker = "extra == 'exporters'", specifier = ">=3.8" },
+    { name = "anyio", specifier = ">=4.10.0" },
     { name = "anyio", marker = "extra == 'anyio'", specifier = ">=4.0" },
 ]
 

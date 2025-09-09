@@ -22,7 +22,16 @@ class Layer:
 
     def __add__(self, other: "Layer") -> "Layer":
         async def acq(parent: Context, memo: dict):
-            left = await self.build_memo(parent, memo); right = await other.build_memo(left, memo); return right
+            left = await self.build_memo(parent, memo)
+            try:
+                right = await other.build_memo(left, memo)
+            except BaseException:
+                # Teardown left if right acquisition fails
+                try:
+                    await self.teardown_memo(left, memo)
+                finally:
+                    raise
+            return right
         async def rel(ctx: Context, memo: dict):
             await other.teardown_memo(ctx, memo); await self.teardown_memo(ctx, memo)
         return Layer(acq, rel)
@@ -30,7 +39,19 @@ class Layer:
     def __or__(self, other: "Layer") -> "Layer":
         import asyncio
         async def acq(parent: Context, memo: dict):
-            c1, c2 = await asyncio.gather(self.build_memo(parent, memo), other.build_memo(parent, memo))
+            res = await asyncio.gather(self.build_memo(parent, memo), other.build_memo(parent, memo), return_exceptions=True)
+            c1, c2 = res
+            if isinstance(c1, BaseException) or isinstance(c2, BaseException):
+                # Teardown whichever succeeded
+                if not isinstance(c1, BaseException):
+                    try: await self.teardown_memo(c1, memo)  # type: ignore[arg-type]
+                    except Exception: pass
+                if not isinstance(c2, BaseException):
+                    try: await other.teardown_memo(c2, memo)  # type: ignore[arg-type]
+                    except Exception: pass
+                # Raise first error
+                first_err = c1 if isinstance(c1, BaseException) else c2  # type: ignore[assignment]
+                raise first_err  # type: ignore[misc]
             merged = c1
             for k, v in c2._values.items():
                 merged = merged.add(k, v)

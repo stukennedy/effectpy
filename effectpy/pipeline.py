@@ -4,6 +4,8 @@ from typing import Callable, Generic, TypeVar, Awaitable
 from .channel import Channel
 from .core import Effect
 from .context import Context
+from .stream import StreamE
+from .queue import Queue, QueueClosed
 
 A = TypeVar('A'); B = TypeVar('B')
 
@@ -18,27 +20,34 @@ class Pipeline(Generic[A,B]):
         return self  # type: ignore
 
     def to_channel(self, out: Channel[B]) -> Effect[object, Exception, None]:
-        async def run(_: Context):
-            prev = self.source
-            # Build each stage, capturing loop variables properly
+        async def run(ctx: Context):
+            # Build a StreamE from the source Channel
+            s = StreamE.from_channel(self.source)
+            # Adapt each Stage to via_effect
             for st in self.stages:
-                nxt: Channel[B] = Channel[B](maxsize=st.out_capacity)  # type: ignore
+                def make_eff(st_local: Stage):
+                    def eff(x):
+                        async def run_effect(_: Context):
+                            return await st_local.func(x)
+                        return Effect(run_effect)
+                    return eff
+                s = s.via_effect(make_eff(st), workers=max(1, st.workers), out_capacity=max(0, st.out_capacity))  # type: ignore
 
-                async def worker(prev_=prev, st_=st, nxt_=nxt):  # capture by default args
-                    while True:
-                        item = await prev_.receive()
-                        res = await st_.func(item)  # type: ignore
-                        await nxt_.send(res)
+            # Start the stream in the background and pump to the provided Channel
+            out_q: Queue[B] = Queue()
+            err_q: Queue[BaseException] = Queue()
+            asyncio.create_task(s._build(out_q, err_q)._run(ctx))
 
-                for _ in range(max(1, st.workers)):
-                    asyncio.create_task(worker())
-                prev = nxt  # type: ignore
-
-            async def pump(prev_=prev):
+            async def pump():
                 while True:
-                    v = await prev_.receive()
+                    try:
+                        v = await out_q.receive()
+                    except QueueClosed:
+                        return
                     await out.send(v)
+
             asyncio.create_task(pump())
+            # Return immediately, leaving background tasks running
             await asyncio.sleep(0)
             return None
         return Effect(run)

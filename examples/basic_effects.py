@@ -3,6 +3,7 @@ Basic effects: composition, error handling, and instrumentation.
 
 Run: python examples/basic_effects.py
 """
+
 import asyncio
 
 from effectpy import (
@@ -32,9 +33,8 @@ async def main():
     def bad_sync():
         raise ValueError("boom")
 
-    recover = (
-        attempt(bad_sync, lambda ex: f"bad:{type(ex).__name__}")
-        .catch_all(lambda e: succeed(f"recovered:{e}"))
+    recover = attempt(bad_sync, lambda ex: f"bad:{type(ex).__name__}").catch_all(
+        lambda e: succeed(f"recovered:{e}")
     )
 
     # Add observability via instrumentation with tags
@@ -52,12 +52,12 @@ async def main():
     # Run both and show results
     v1 = await tagged_compute._run(env)
     v2 = await tagged_recover._run(env)
-    print("compute.ok =>", v1)          # 10
-    print("compute.recover =>", v2)     # recovered:bad:ValueError
+
+    print("compute.ok =>", v1)  # 10
+    print("compute.recover =>", v2)  # recovered:bad:ValueError
 
     await scope.close()
 
 
 if __name__ == "__main__":
     asyncio.run(main())
-
